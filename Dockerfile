@@ -13,6 +13,8 @@ RUN echo "max_execution_time = 90" >> /usr/local/etc/php/conf.d/php-uploads.ini
 
 RUN echo "sendmail_path=sendmail -i -t" >> /usr/local/etc/php/conf.d/php-sendmail.ini
 
+CMD /usr/sbin/service sendmail restart
+
 COPY wordpress_install.sh /usr/local/bin
 
 ENTRYPOINT ["wordpress_install.sh"]

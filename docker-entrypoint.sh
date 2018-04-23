@@ -1,5 +1,6 @@
 #!/bin/bash
 # ==========================================================
+#
 # Sets up WordPress using the VIRTUAL_HOST and other
 # environment variables. Some sections are from the
 # official WordPress Docker image with modifications to
@@ -33,9 +34,9 @@
 # ===========================================================
 
 #variables
-scriptLog=/var/log/wordpress_setup.log
+scriptLog=/var/log/docker-entrypoint-setup.log
 
-echo >&2 `date` ": Begin WordPress install/update script..." | tee -a $scriptLog
+echo >&2 `date` ": Begin Docker entrypoint install/update script..." | tee -a $scriptLog
 
 # usage: file_env VAR [DEFAULT]
 #   ie: file_env 'XYZ_DB_PASSWORD' 'example'
@@ -161,7 +162,7 @@ if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROT
 	$_SERVER['HTTPS'] = 'on';
 }
 EOPHP
-			chown "$user:$group" $VhostPath/wp-config.php
+			chown www-data:www-data $VhostPath/wp-config.php
 		fi
     set_config() {
 
