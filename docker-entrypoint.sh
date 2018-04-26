@@ -130,7 +130,7 @@ for i in "${V_HOSTS[@]}"; do
 	#wasn't copied at some point
   if ! [ -e $VhostPath/index.php ] || ! [ -e $VhostPath/wp-includes/version.php ] || ! [ -e $VhostPath/xmlrpc.php ] || [ $WORDPRESS_UPDATE ]; then
 
-		echo >&2 "WordPress not found in $VhostPath - copying now..."
+		echo >&2 "WordPress not found in $VhostPath - copying now..." | tee -a $scriptLog
 
     #decompress earlier downloaded file to the WordPress path
 		tar -zxf /tmp/wordpress.tar.gz --strip-components=1 --directory $VhostPath/ | tee -a $scriptLog
@@ -145,6 +145,8 @@ for i in "${V_HOSTS[@]}"; do
 	fi
 
 	if ! [ -e $VhostPath/wp-config.php ]; then
+
+		echo >&2 "Wp-config.php not found in $VhostPath - copying now..." | tee -a $scriptLog
 
 		#Copy the wp-config-sample.php to wp-config.php
 		#Start section to update wp-config.php
