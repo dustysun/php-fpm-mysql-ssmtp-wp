@@ -128,7 +128,7 @@ for i in "${V_HOSTS[@]}"; do
   #see if WP needs to be set up
 	#add additional checks to see if xmlrpc.php is there in case the full WP
 	#wasn't copied at some point
-  if ! [ -e $VhostPath/index.php ] || ! [ -e $VhostPath/wp-includes/version.php ] ||  ! [ -e $VhostPath/xmlrpc.php ] || [ $WORDPRESS_UPDATE ]; then
+  if [ ! -e $VhostPath/index.php ] || [ ! -e $VhostPath/wp-includes/version.php ] || [ ! -e $VhostPath/xmlrpc.php ] || [ $WORDPRESS_UPDATE ]; then
 
 		echo >&2 "WordPress not found in $VhostPath - copying now..."
 
@@ -141,6 +141,7 @@ for i in "${V_HOSTS[@]}"; do
 
     #set initial permissions to the www-data user
     chown -R www-data:www-data $VhostPath | tee -a $scriptLog
+
 	fi
 
 	if [ ! -e $VhostPath/wp-config.php ]; then
