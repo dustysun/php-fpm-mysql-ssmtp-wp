@@ -36,7 +36,7 @@
 #variables
 scriptLog=/var/log/docker-entrypoint-setup.log
 
-echo >&2 `date` ": Begin Docker entrypoint install/update script..." | tee -a $scriptLog
+echo `date` ": Begin Docker entrypoint install/update script..." 2>&1 | tee -a $scriptLog
 
 # usage: file_env VAR [DEFAULT]
 #   ie: file_env 'XYZ_DB_PASSWORD' 'example'
@@ -86,10 +86,10 @@ curl -o wordpress.tar.gz -fSL "https://wordpress.org/latest.tar.gz"  | tee -a $s
 # Get the host names which are separated by comma
 
 #Check for $VIRTUAL_HOST
-if [ -z "$VIRTUAL_HOST" ]; then echo >&2 "VIRTUAL_HOST var must be set in the Docker environment variables. Exiting..."; exit 1; fi
+if [ -z "$VIRTUAL_HOST" ]; then echo "VIRTUAL_HOST var must be set in the Docker environment variables. Exiting..." 2>&1 | tee -a $scriptLog; exit 1; fi
 
 #Check for $VIRTUAL_ROOT
-if [ -z "$VIRTUAL_ROOT" ]; then echo >&2 "VIRTUAL_ROOT var must be set in the Docker environment variables. Exiting..."; exit 1; fi
+if [ -z "$VIRTUAL_ROOT" ]; then echo "VIRTUAL_ROOT var must be set in the Docker environment variables. Exiting..." 2>&1 | tee -a $scriptLog; exit 1; fi
 
 
 IFS=',' read -ra V_HOSTS <<< "${VIRTUAL_HOST}"
@@ -117,7 +117,7 @@ for i in "${V_HOSTS[@]}"; do
   WORDPRESS_SKIP=${!EVAL_VHOST_WORDPRESS_SKIP}
 
   if [ $WORDPRESS_SKIP ] && [ $WORDPRESS_SKIP = '1' ]; then
-    echo >&2 "WordPress install/update skipped for $i."
+    echo "WordPress install/update skipped for $i."  2>&1 | tee -a $scriptLog
     continue;
   fi
 
@@ -130,31 +130,31 @@ for i in "${V_HOSTS[@]}"; do
 	#wasn't copied at some point
   if ! [ -e $VhostPath/index.php ] || ! [ -e $VhostPath/wp-includes/version.php ] || ! [ -e $VhostPath/xmlrpc.php ] || [ $WORDPRESS_UPDATE ]; then
 
-		echo >&2 "WordPress not found in $VhostPath - copying now..." | tee -a $scriptLog
+		echo "WordPress not found in $VhostPath - copying now..." 2>&1 | tee -a $scriptLog
 
     #decompress earlier downloaded file to the WordPress path
-		tar -vzxf /tmp/wordpress.tar.gz --strip-components=1 --directory $VhostPath/ | tee -a $scriptLog
+		tar -zxf /tmp/wordpress.tar.gz --strip-components=1 --directory $VhostPath/ 2>&1 | tee -a $scriptLog
     #cp -R /tmp/wordpress/* $VhostPath/ | tee -a $scriptLog
 
     #create .htaccess in the root if it doesn't already exist.
     touch $VhostPath/.htaccess | tee -a $scriptLog
 
     #set initial permissions to the www-data user
-		echo >&2 "Changing permissions in $VhostPath..." | tee -a $scriptLog
-    chown -Rv www-data:www-data $VhostPath | tee -a $scriptLog
+		echo "Changing permissions in $VhostPath..." 2>&1 | tee -a $scriptLog
+    chown -Rv www-data:www-data $VhostPath 2>&1 | tee -a $scriptLog
 
 	fi
 
 	if ! [ -e $VhostPath/wp-config.php ]; then
 
-		echo >&2 "Wp-config.php not found in $VhostPath - creating now..." | tee -a $scriptLog
+		echo "Wp-config.php not found in $VhostPath - creating now..." 2>&1 | tee -a $scriptLog
 
 		#Copy the wp-config-sample.php to wp-config.php
 		#Start section to update wp-config.php
 		#Check for DB access
-		if [ -z "${WORDPRESS_DB_HOST}" ]; then echo >&2 "WORDPRESS_DB_HOST must be set in the Docker environment variables to set up WordPress. Skipping this host..."; continue; fi
-		if [ -z "${WORDPRESS_DB_ADMIN_USER}" ]; then echo >&2 "WORDPRESS_DB_ADMIN_USER must be set in the Docker environment variables. Exiting..."; continue; fi
-		if [ -z "${WORDPRESS_DB_ADMIN_PASSWORD}" ]; then echo >&2 "WORDPRESS_DB_ADMIN_PASSWORD must be set in the Docker environment variables. Exiting..."; continue; fi
+		if [ -z "${WORDPRESS_DB_HOST}" ]; then echo "WORDPRESS_DB_HOST must be set in the Docker environment variables to set up WordPress. Skipping this host..."; continue; fi
+		if [ -z "${WORDPRESS_DB_ADMIN_USER}" ] 2>&1 | tee -a $scriptLog; then echo "WORDPRESS_DB_ADMIN_USER must be set in the Docker environment variables. Exiting..." 2>&1 | tee -a $scriptLog; continue; fi
+		if [ -z "${WORDPRESS_DB_ADMIN_PASSWORD}" ]; then echo "WORDPRESS_DB_ADMIN_PASSWORD must be set in the Docker environment variables. Exiting..." 2>&1 | tee -a $scriptLog; continue; fi
 
     # version 4.4.1 decided to switch to windows line endings, that breaks our seds and awks
     # https://github.com/docker-library/wordpress/issues/116
@@ -168,8 +168,8 @@ if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROT
 	$_SERVER['HTTPS'] = 'on';
 }
 EOPHP
-		echo >&2 "Changing permissions on $VhostPath/wp-config.php..." | tee -a $scriptLog
-		chown www-data:www-data $VhostPath/wp-config.php
+		echo "Changing permissions on $VhostPath/wp-config.php..." 2>&1 | tee -a $scriptLog
+		chown www-data:www-data $VhostPath/wp-config.php 2>&1 | tee -a $scriptLog
 
     set_config() {
 
@@ -219,9 +219,9 @@ EOPHP
     EVAL_VHOST_DEBUG=${VHOST_VAR}_WP_DEBUG
 
     # Tests to make sure certain evn vars are set
-    if [ -z "${!EVAL_VHOST_DB_NAME}" ]; then echo >&2 "${VHOST_VAR}_DB_NAME must be set in the Docker environment variables. Not configuring wp-config.php for this host..."; continue; fi
-    if [ -z "${!EVAL_VHOST_DB_USER}" ]; then echo >&2 "${VHOST_VAR}_DB_USER must be set in the Docker environment variables. Not configuring wp-config.php for this host..."; continue; fi
-    if [ -z "${!EVAL_VHOST_DB_PASSWORD}" ]; then echo >&2 "${VHOST_VAR}_DB_PASSWORD must be set in the Docker environment variables. Not configuring wp-config.php for this host..."; continue; fi
+    if [ -z "${!EVAL_VHOST_DB_NAME}" ]; then echo "${VHOST_VAR}_DB_NAME must be set in the Docker environment variables. Not configuring wp-config.php for this host..." 2>&1 | tee -a $scriptLog; continue; fi
+    if [ -z "${!EVAL_VHOST_DB_USER}" ]; then echo "${VHOST_VAR}_DB_USER must be set in the Docker environment variables. Not configuring wp-config.php for this host..." 2>&1 | tee -a $scriptLog; continue; fi
+    if [ -z "${!EVAL_VHOST_DB_PASSWORD}" ]; then echo "${VHOST_VAR}_DB_PASSWORD must be set in the Docker environment variables. Not configuring wp-config.php for this host..." 2>&1 | tee -a $scriptLog; continue; fi
 
     WP_VHOST_DB_NAME=${!EVAL_VHOST_DB_NAME}
     WP_VHOST_DB_USER=${!EVAL_VHOST_DB_USER}
