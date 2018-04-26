@@ -262,4 +262,7 @@ EOPHP
   fi # end updates to wp-config.php
 done # end processing per host
 
+# Start sendmail
+/etc/init.d/sendmail start
+
 exec "$@"
