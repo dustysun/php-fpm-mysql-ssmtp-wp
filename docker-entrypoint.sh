@@ -167,7 +167,7 @@ if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROT
 }
 EOPHP
 		chown www-data:www-data $VhostPath/wp-config.php
-	fi
+		
     set_config() {
 
       key="$1"
