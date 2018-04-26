@@ -153,7 +153,7 @@ for i in "${V_HOSTS[@]}"; do
 		#Start section to update wp-config.php
 		#Check for DB access
 		if [ -z "${WORDPRESS_DB_HOST}" ]; then echo "WORDPRESS_DB_HOST must be set in the Docker environment variables to set up WordPress. Skipping this host..."; continue; fi
-		if [ -z "${WORDPRESS_DB_ADMIN_USER}" ] 2>&1 | tee -a $scriptLog; then echo "WORDPRESS_DB_ADMIN_USER must be set in the Docker environment variables. Exiting..." 2>&1 | tee -a $scriptLog; continue; fi
+		if [ -z "${WORDPRESS_DB_ADMIN_USER}" ]; then echo "WORDPRESS_DB_ADMIN_USER must be set in the Docker environment variables. Exiting..." 2>&1 | tee -a $scriptLog; continue; fi
 		if [ -z "${WORDPRESS_DB_ADMIN_PASSWORD}" ]; then echo "WORDPRESS_DB_ADMIN_PASSWORD must be set in the Docker environment variables. Exiting..." 2>&1 | tee -a $scriptLog; continue; fi
 
     # version 4.4.1 decided to switch to windows line endings, that breaks our seds and awks
