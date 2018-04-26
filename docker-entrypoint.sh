@@ -128,12 +128,12 @@ for i in "${V_HOSTS[@]}"; do
   #see if WP needs to be set up
 	#add additional checks to see if xmlrpc.php is there in case the full WP
 	#wasn't copied at some point
-  if [ ! -e $VhostPath/index.php ] || [ ! -e $VhostPath/wp-includes/version.php ] || [ ! -e $VhostPath/xmlrpc.php ] || [ $WORDPRESS_UPDATE ]; then
+  if ! [ -e $VhostPath/index.php ] || ! [ -e $VhostPath/wp-includes/version.php ] || ! [ -e $VhostPath/xmlrpc.php ] || [ $WORDPRESS_UPDATE ]; then
 
 		echo >&2 "WordPress not found in $VhostPath - copying now..."
 
     #decompress earlier downloaded file to the WordPress path
-		tar -vzxf /tmp/wordpress.tar.gz --directory $VhostPath/ | tee -a $scriptLog
+		tar -zxf /tmp/wordpress.tar.gz --strip-components=1 --directory $VhostPath/ | tee -a $scriptLog
     #cp -R /tmp/wordpress/* $VhostPath/ | tee -a $scriptLog
 
     #create .htaccess in the root if it doesn't already exist.
@@ -144,7 +144,7 @@ for i in "${V_HOSTS[@]}"; do
 
 	fi
 
-	if [ ! -e $VhostPath/wp-config.php ]; then
+	if ! [ -e $VhostPath/wp-config.php ]; then
 
 		#Copy the wp-config-sample.php to wp-config.php
 		#Start section to update wp-config.php
@@ -167,7 +167,7 @@ if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROT
 }
 EOPHP
 		chown www-data:www-data $VhostPath/wp-config.php
-		
+
     set_config() {
 
       key="$1"
