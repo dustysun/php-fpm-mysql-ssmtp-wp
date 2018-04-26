@@ -133,20 +133,21 @@ for i in "${V_HOSTS[@]}"; do
 		echo >&2 "WordPress not found in $VhostPath - copying now..." | tee -a $scriptLog
 
     #decompress earlier downloaded file to the WordPress path
-		tar -zxf /tmp/wordpress.tar.gz --strip-components=1 --directory $VhostPath/ | tee -a $scriptLog
+		tar -vzxf /tmp/wordpress.tar.gz --strip-components=1 --directory $VhostPath/ | tee -a $scriptLog
     #cp -R /tmp/wordpress/* $VhostPath/ | tee -a $scriptLog
 
     #create .htaccess in the root if it doesn't already exist.
     touch $VhostPath/.htaccess | tee -a $scriptLog
 
     #set initial permissions to the www-data user
-    chown -R www-data:www-data $VhostPath | tee -a $scriptLog
+		echo >&2 "Changing permissions in $VhostPath..." | tee -a $scriptLog
+    chown -Rv www-data:www-data $VhostPath | tee -a $scriptLog
 
 	fi
 
 	if ! [ -e $VhostPath/wp-config.php ]; then
 
-		echo >&2 "Wp-config.php not found in $VhostPath - copying now..." | tee -a $scriptLog
+		echo >&2 "Wp-config.php not found in $VhostPath - creating now..." | tee -a $scriptLog
 
 		#Copy the wp-config-sample.php to wp-config.php
 		#Start section to update wp-config.php
@@ -155,7 +156,6 @@ for i in "${V_HOSTS[@]}"; do
 		if [ -z "${WORDPRESS_DB_ADMIN_USER}" ]; then echo >&2 "WORDPRESS_DB_ADMIN_USER must be set in the Docker environment variables. Exiting..."; continue; fi
 		if [ -z "${WORDPRESS_DB_ADMIN_PASSWORD}" ]; then echo >&2 "WORDPRESS_DB_ADMIN_PASSWORD must be set in the Docker environment variables. Exiting..."; continue; fi
 
-    echo >&2 "We are creating wp-config.php..."
     # version 4.4.1 decided to switch to windows line endings, that breaks our seds and awks
     # https://github.com/docker-library/wordpress/issues/116
     # https://github.com/WordPress/WordPress/commit/1acedc542fba2482bab88ec70d4bea4b997a92e4
@@ -168,6 +168,7 @@ if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROT
 	$_SERVER['HTTPS'] = 'on';
 }
 EOPHP
+		echo >&2 "Changing permissions on $VhostPath/wp-config.php..." | tee -a $scriptLog
 		chown www-data:www-data $VhostPath/wp-config.php
 
     set_config() {
@@ -269,6 +270,6 @@ EOPHP
 done # end processing per host
 
 # Start sendmail
-/etc/init.d/sendmail start
+/etc/init.d/sendmail start | tee -a $scriptLog
 
 exec "$@"
