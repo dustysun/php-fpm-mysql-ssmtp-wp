@@ -81,8 +81,6 @@ echo "For example, hostname.com_DB_NAME, hostname.com_DB_USER, hostname.com_DB_P
 #Download WordPress
 cd /tmp
 curl -o wordpress.tar.gz -fSL "https://wordpress.org/latest.tar.gz"  | tee -a $scriptLog
-#decompress
-tar -vzxf /tmp/wordpress.tar.gz | tee -a $scriptLog
 
 # Script relies on the environment variables
 # Get the host names which are separated by comma
@@ -128,42 +126,47 @@ for i in "${V_HOSTS[@]}"; do
   WORDPRESS_UPDATE=${!EVAL_VHOST_WORDPRESS_UPDATE}
 
   #see if WP needs to be set up
-  if ! [ -e $VhostPath/index.php -a -e $VhostPath/wp-includes/version.php ] || [ $WORDPRESS_UPDATE ]; then
+	#add additional checks to see if xmlrpc.php is there in case the full WP
+	#wasn't copied at some point
+  if ! [ -e $VhostPath/index.php ] || ! [ -e $VhostPath/wp-includes/version.php ] ||  ! [ -e $VhostPath/xmlrpc.php ] || [ $WORDPRESS_UPDATE ]; then
 
 		echo >&2 "WordPress not found in $VhostPath - copying now..."
 
-    # #Move to the WordPress path
-    cp -R /tmp/wordpress/* $VhostPath/ | tee -a $scriptLog
+    #decompress earlier downloaded file to the WordPress path
+		tar -vzxf /tmp/wordpress.tar.gz --directory $VhostPath/ | tee -a $scriptLog
+    #cp -R /tmp/wordpress/* $VhostPath/ | tee -a $scriptLog
 
     #create .htaccess in the root if it doesn't already exist.
     touch $VhostPath/.htaccess | tee -a $scriptLog
 
     #set initial permissions to the www-data user
     chown -R www-data:www-data $VhostPath | tee -a $scriptLog
+	fi
 
-    #Copy the wp-config-sample.php to wp-config.php
-    #Start section to update wp-config.php
-    #Check for DB access
-    if [ -z "${WORDPRESS_DB_HOST}" ]; then echo >&2 "WORDPRESS_DB_HOST must be set in the Docker environment variables to set up WordPress. Skipping this host..."; continue; fi
-    if [ -z "${WORDPRESS_DB_ADMIN_USER}" ]; then echo >&2 "WORDPRESS_DB_ADMIN_USER must be set in the Docker environment variables. Exiting..."; continue; fi
-    if [ -z "${WORDPRESS_DB_ADMIN_PASSWORD}" ]; then echo >&2 "WORDPRESS_DB_ADMIN_PASSWORD must be set in the Docker environment variables. Exiting..."; continue; fi
+	if [ ! -e $VhostPath/wp-config.php ]; then
 
-		if [ ! -e $VhostPath/wp-config.php ]; then
-      echo >&2 "We are creating wp-config.php..."
-      # version 4.4.1 decided to switch to windows line endings, that breaks our seds and awks
-      # https://github.com/docker-library/wordpress/issues/116
-      # https://github.com/WordPress/WordPress/commit/1acedc542fba2482bab88ec70d4bea4b997a92e4
-      sed -ri -e 's/\r$//' $VhostPath/wp-config*
+		#Copy the wp-config-sample.php to wp-config.php
+		#Start section to update wp-config.php
+		#Check for DB access
+		if [ -z "${WORDPRESS_DB_HOST}" ]; then echo >&2 "WORDPRESS_DB_HOST must be set in the Docker environment variables to set up WordPress. Skipping this host..."; continue; fi
+		if [ -z "${WORDPRESS_DB_ADMIN_USER}" ]; then echo >&2 "WORDPRESS_DB_ADMIN_USER must be set in the Docker environment variables. Exiting..."; continue; fi
+		if [ -z "${WORDPRESS_DB_ADMIN_PASSWORD}" ]; then echo >&2 "WORDPRESS_DB_ADMIN_PASSWORD must be set in the Docker environment variables. Exiting..."; continue; fi
 
-			awk '/^\/\*.*stop editing.*\*\/$/ && c == 0 { c = 1; system("cat") } { print }' $VhostPath/wp-config-sample.php > $VhostPath/wp-config.php <<'EOPHP'
+    echo >&2 "We are creating wp-config.php..."
+    # version 4.4.1 decided to switch to windows line endings, that breaks our seds and awks
+    # https://github.com/docker-library/wordpress/issues/116
+    # https://github.com/WordPress/WordPress/commit/1acedc542fba2482bab88ec70d4bea4b997a92e4
+    sed -ri -e 's/\r$//' $VhostPath/wp-config*
+
+		awk '/^\/\*.*stop editing.*\*\/$/ && c == 0 { c = 1; system("cat") } { print }' $VhostPath/wp-config-sample.php > $VhostPath/wp-config.php <<'EOPHP'
 // If we're behind a proxy server and using HTTPS, we need to alert Wordpress of that fact
 // see also http://codex.wordpress.org/Administration_Over_SSL#Using_a_Reverse_Proxy
 if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
 	$_SERVER['HTTPS'] = 'on';
 }
 EOPHP
-			chown www-data:www-data $VhostPath/wp-config.php
-		fi
+		chown www-data:www-data $VhostPath/wp-config.php
+	fi
     set_config() {
 
       key="$1"
