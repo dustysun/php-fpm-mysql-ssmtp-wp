@@ -1,8 +1,11 @@
 FROM php:fpm
 
-RUN apt-get update && apt-get install -q -y libjpeg-dev libpng-dev zlib1g-dev mysql-client sendmail mailutils && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -q -y libjpeg-dev libpng-dev zlib1g-dev mysql-client sendmail mailutils  libmemcached-dev && rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr
+
+RUN pecl install memcached \
+    && echo "extension=memcached.so" > /usr/local/etc/php/conf.d/20_memcached.ini
 
 RUN docker-php-ext-install gd mysqli opcache zip
 

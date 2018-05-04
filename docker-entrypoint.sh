@@ -141,7 +141,7 @@ for i in "${V_HOSTS[@]}"; do
 
     #set initial permissions to the www-data user
 		echo "Changing permissions in $VhostPath..." 2>&1 | tee -a $scriptLog
-    chown -Rv www-data:www-data $VhostPath 2>&1 | tee -a $scriptLog
+    chown -R www-data:www-data $VhostPath 2>&1 | tee -a $scriptLog
 
 	fi
 
