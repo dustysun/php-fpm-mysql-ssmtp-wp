@@ -95,7 +95,14 @@ if [ -z "$VIRTUAL_ROOT" ]; then echo "VIRTUAL_ROOT var must be set in the Docker
 IFS=',' read -ra V_HOSTS <<< "${VIRTUAL_HOST}"
 for i in "${V_HOSTS[@]}"; do
 
-  #remove any whitespace
+  #remove any leading whitespace
+	i="${i#"${i%%[![:space:]]*}"}"
+	#remove any trailing whitespace
+	i="${i%"${i##*[![:space:]]}"}"
+	#remove any hosts separated by spaces by only taking the first string / host
+	i=`echo $i | awk '{print $1}'`
+
+	#remove any other whitespace (probably not necessary)
   CURRENT_VHOST="${i// /}"
 
   #convert name to a version with underscores by removing periods
