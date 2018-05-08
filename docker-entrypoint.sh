@@ -104,18 +104,16 @@ for i in "${V_HOSTS[@]}"; do
   i=`echo $i | awk '{print $1}'`
   #remove a wildcard host like *.example.com so that it's just example.com
   i="${i/\*./}"
-
+	i="${i/\*/}"
+	
 	#remove any other whitespace (probably not necessary)
   CURRENT_VHOST="${i// /}"
 
-echo $CURRENT_VHOST
-done
   #convert name to a version with underscores by removing periods
   VHOST_VAR="${CURRENT_VHOST//./_}"
 
   #convert name to a version with underscores by removing hyphens
   VHOST_VAR="${VHOST_VAR//-/_}"
-
 
   VhostPath=${VIRTUAL_ROOT}/${CURRENT_VHOST}
 
