@@ -100,8 +100,11 @@ for i in "${V_HOSTS[@]}"; do
 	#remove any trailing whitespace
 	i="${i%"${i##*[![:space:]]}"}"
 	#remove any hosts separated by spaces by only taking the first string / host
+	#so that 'example.com www.example.com' just becomes 'example.com'
 	i=`echo $i | awk '{print $1}'`
-
+	#remove a wildcard host like *.example.com so that it's just example.com
+	i="${i/\*./}"
+	
 	#remove any other whitespace (probably not necessary)
   CURRENT_VHOST="${i// /}"
 
