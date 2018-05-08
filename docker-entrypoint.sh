@@ -96,18 +96,20 @@ IFS=',' read -ra V_HOSTS <<< "${VIRTUAL_HOST}"
 for i in "${V_HOSTS[@]}"; do
 
   #remove any leading whitespace
-	i="${i#"${i%%[![:space:]]*}"}"
-	#remove any trailing whitespace
-	i="${i%"${i##*[![:space:]]}"}"
-	#remove any hosts separated by spaces by only taking the first string / host
-	#so that 'example.com www.example.com' just becomes 'example.com'
-	i=`echo $i | awk '{print $1}'`
-	#remove a wildcard host like *.example.com so that it's just example.com
-	i="${i/\*./}"
-	
+  i="${i#"${i%%[![:space:]]*}"}"
+  #remove any trailing whitespace
+  i="${i%"${i##*[![:space:]]}"}"
+  #remove any hosts separated by spaces by only taking the first string / host
+  #so that 'example.com www.example.com' just becomes 'example.com'
+  i=`echo $i | awk '{print $1}'`
+  #remove a wildcard host like *.example.com so that it's just example.com
+  i="${i/\*./}"
+
 	#remove any other whitespace (probably not necessary)
   CURRENT_VHOST="${i// /}"
 
+echo $CURRENT_VHOST
+done
   #convert name to a version with underscores by removing periods
   VHOST_VAR="${CURRENT_VHOST//./_}"
 
