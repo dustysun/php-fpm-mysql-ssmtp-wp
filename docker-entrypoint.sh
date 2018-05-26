@@ -290,16 +290,29 @@ EOPHP
 done # end processing per host
 
 # Set up SSTMP
-if [ -z "$MAIL_SERVER" ]; then
-	echo "MAIL_SERVER not set. Defaulting to 'mail' as hostname." 2>&1 | tee -a $scriptLog;
-	$MAIL_SERVER=mail
-fi
-# Set up SSTMP
-if [ -z "$MAIL_PORT" ]; then
-	echo "MAIL_PORT not set. Defaulting to '25' for port." 2>&1 | tee -a $scriptLog;
-	$MAIL_PORT=25
+if [ -z "$MAIL_HOSTNAME" ]; then
+	echo "MAIL_HOSTNAME not set. Defaulting to 'localhost.localdomain' as hostname." 2>&1 | tee -a $scriptLog;
+	MAIL_HOSTNAME=localhost.localdomain
 fi
 
-echo "mailhub=${MAIL_SERVER}:${mail_port}" >> /etc/ssmtp/ssmtp.conf
+if [ -z "$MAIL_ROOT_EMAIL" ]; then
+	echo "MAIL_ROOT_EMAIL not set. Defaulting to 'root@localhost' as root email." 2>&1 | tee -a $scriptLog;
+	MAIL_ROOT_EMAIL=root@localhost
+fi
+
+if [ -z "$MAIL_SERVER" ]; then
+	echo "MAIL_SERVER not set. Defaulting to 'mail' as mailserver name." 2>&1 | tee -a $scriptLog;
+	MAIL_SERVER=mail
+fi
+
+if [ -z "$MAIL_PORT" ]; then
+	echo "MAIL_PORT not set. Defaulting to '25' for port." 2>&1 | tee -a $scriptLog;
+	MAIL_PORT=25
+fi
+
+echo "hostname=${MAIL_HOSTNAME}" > /etc/ssmtp/ssmtp.conf
+echo "root=${MAIL_ROOT_EMAIL}" >> /etc/ssmtp/ssmtp.conf
+echo "mailhub=${MAIL_SERVER}:${MAIL_PORT}" >> /etc/ssmtp/ssmtp.conf
+echo "FromLineOverride=yes" >> /etc/ssmtp/ssmtp.conf
 
 exec "$@"
