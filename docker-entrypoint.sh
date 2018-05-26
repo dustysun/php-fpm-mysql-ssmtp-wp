@@ -1,6 +1,8 @@
 #!/bin/bash
 # ==========================================================
 #
+# v 2.0.1
+#
 # Sets up WordPress using the VIRTUAL_HOST and other
 # environment variables. Some sections are from the
 # official WordPress Docker image with modifications to
@@ -31,6 +33,14 @@
 #			be copied even if they already exist in the destination
 # virtualhost_com_WORDPRESS_SKIP: Set to 1 to prevent WP files from being copied
 #
+# Mail environment variables:
+# To use these, you must have another container or other accessible mailing
+# host from which you can send emails
+#
+# mail_hostname: Name of your server; default is localhost.localdomain
+# mail_root_email: Email address for the root user; default is root@localhost
+# mail_server: FQDN or hostname/containername of your mailserver; default is mail
+# mail_port: Port for your mailserver; default is 25
 # ===========================================================
 
 #variables
@@ -105,7 +115,7 @@ for i in "${V_HOSTS[@]}"; do
   #remove a wildcard host like *.example.com so that it's just example.com
   i="${i/\*./}"
 	i="${i/\*/}"
-	
+
 	#remove any other whitespace (probably not necessary)
   CURRENT_VHOST="${i// /}"
 
@@ -279,7 +289,17 @@ EOPHP
   fi # end updates to wp-config.php
 done # end processing per host
 
-# Start sendmail
-/etc/init.d/sendmail start | tee -a $scriptLog
+# Set up SSTMP
+if [ -z "$MAIL_SERVER" ]; then
+	echo "MAIL_SERVER not set. Defaulting to 'mail' as hostname." 2>&1 | tee -a $scriptLog;
+	$MAIL_SERVER=mail
+fi
+# Set up SSTMP
+if [ -z "$MAIL_PORT" ]; then
+	echo "MAIL_PORT not set. Defaulting to '25' for port." 2>&1 | tee -a $scriptLog;
+	$MAIL_PORT=25
+fi
+
+echo "mailhub=${MAIL_SERVER}:${mail_port}" >> /etc/ssmtp/ssmtp.conf
 
 exec "$@"
