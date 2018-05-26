@@ -10,7 +10,8 @@ Make sure to start your containers with the -h or --hostname flag with a FQDN (f
 
 Next, you will need to provide environment variables that point SSMTP to your mailserver. A good option is the [namshi/docker-smtp container](<a href="https://github.com/namshi/docker-smtp">)
 
-Environment Variables Supported
+# Environment Variables Supported
+
 Required environment variables:
 VIRTUAL_HOST: One or more virtual hosts separated by comma
 VIRTUAL_ROOT: Root directory to the HTML files for the site
