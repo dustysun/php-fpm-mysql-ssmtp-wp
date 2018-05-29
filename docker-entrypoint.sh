@@ -37,10 +37,10 @@
 # To use these, you must have another container or other accessible mailing
 # host from which you can send emails
 #
-# mail_hostname: Name of your server; default is localhost.localdomain
-# mail_root_email: Email address for the root user; default is root@localhost
-# mail_server: FQDN or hostname/containername of your mailserver; default is mail
-# mail_port: Port for your mailserver; default is 25
+# ssmtp_hostname: Name of your server; default is localhost.localdomain
+# ssmtp_root_email: Email address for the root user; default is root@localhost
+# ssmtp_server: FQDN or hostname/containername of your mailserver; default is mail
+# ssmtp_port: Port for your mailserver; default is 25
 # ===========================================================
 
 #variables
@@ -290,29 +290,29 @@ EOPHP
 done # end processing per host
 
 # Set up SSTMP
-if [ -z "$MAIL_HOSTNAME" ]; then
-	echo "MAIL_HOSTNAME not set. Defaulting to 'localhost.localdomain' as hostname." 2>&1 | tee -a $scriptLog;
-	MAIL_HOSTNAME=localhost.localdomain
+if [ -z "$SSMTP_HOSTNAME" ]; then
+	echo "SSMTP_HOSTNAME not set. Defaulting to 'localhost.localdomain' as hostname." 2>&1 | tee -a $scriptLog;
+	SSMTP_HOSTNAME=localhost.localdomain
 fi
 
-if [ -z "$MAIL_ROOT_EMAIL" ]; then
-	echo "MAIL_ROOT_EMAIL not set. Defaulting to 'root@localhost' as root email." 2>&1 | tee -a $scriptLog;
-	MAIL_ROOT_EMAIL=root@localhost
+if [ -z "$SSMTP_ROOT_EMAIL" ]; then
+	echo "SSMTP_ROOT_EMAIL not set. Defaulting to 'root@localhost' as root email." 2>&1 | tee -a $scriptLog;
+	SSMTP_ROOT_EMAIL=root@localhost
 fi
 
-if [ -z "$MAIL_SERVER" ]; then
-	echo "MAIL_SERVER not set. Defaulting to 'mail' as mailserver name." 2>&1 | tee -a $scriptLog;
-	MAIL_SERVER=mail
+if [ -z "$SSMTP_SERVER" ]; then
+	echo "SSMTP_SERVER not set. Defaulting to 'mail' as mailserver name." 2>&1 | tee -a $scriptLog;
+	SSMTP_SERVER=mail
 fi
 
-if [ -z "$MAIL_PORT" ]; then
-	echo "MAIL_PORT not set. Defaulting to '25' for port." 2>&1 | tee -a $scriptLog;
-	MAIL_PORT=25
+if [ -z "$SSMTP_PORT" ]; then
+	echo "SSMTP_PORT not set. Defaulting to '25' for port." 2>&1 | tee -a $scriptLog;
+	SSMTP_PORT=25
 fi
 
-echo "hostname=${MAIL_HOSTNAME}" > /etc/ssmtp/ssmtp.conf
-echo "root=${MAIL_ROOT_EMAIL}" >> /etc/ssmtp/ssmtp.conf
-echo "mailhub=${MAIL_SERVER}:${MAIL_PORT}" >> /etc/ssmtp/ssmtp.conf
+echo "hostname=${SSMTP_HOSTNAME}" > /etc/ssmtp/ssmtp.conf
+echo "root=${SSMTP_ROOT_EMAIL}" >> /etc/ssmtp/ssmtp.conf
+echo "mailhub=${SSMTP_SERVER}:${SSMTP_PORT}" >> /etc/ssmtp/ssmtp.conf
 echo "FromLineOverride=yes" >> /etc/ssmtp/ssmtp.conf
 
 exec "$@"
