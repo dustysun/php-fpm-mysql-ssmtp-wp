@@ -42,10 +42,10 @@ Mail environment variables:
 To use these, you must have another container or other accessible mailing
 host from which you can send emails
 
-mail_hostname: Name of your server; default is localhost.localdomain
-mail_root_email: Email address for the root user; default is root@localhost
-mail_server: FQDN or hostname/containername of your mailserver; default is mail
-mail_port: Port for your mailserver; default is 25
+ssmtp_hostname: Name of your server; default is localhost.localdomain
+ssmtp_root_email: Email address for the root user; default is root@localhost
+ssmtp_server: FQDN or hostname/containername of your mailserver; default is mail
+ssmtp_port: Port for your mailserver; default is 25
 
 # Questions?
 
