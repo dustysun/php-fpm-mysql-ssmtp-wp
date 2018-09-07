@@ -1,6 +1,15 @@
 FROM php:fpm
 
-RUN apt-get update && apt-get install -q -y libjpeg-dev libpng-dev zlib1g-dev mysql-client ssmtp mailutils libmemcached-dev && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -q -y \
+		libjpeg-dev \
+		libpng-dev \
+		libxml2-dev \
+		zlib1g-dev \
+		mysql-client \
+		ssmtp \
+		mailutils \
+		libmemcached-dev \
+		&& rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr
 

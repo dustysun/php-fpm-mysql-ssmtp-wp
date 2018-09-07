@@ -54,5 +54,5 @@ Contact [support@dustysun.com](<a href="mailto:support@dustysun.com">)
 
 # Revisions
 
-= v2 2018-09-07 = 
+= v2.1 2018-09-07 = 
 * Added SOAP client
