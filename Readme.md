@@ -50,3 +50,9 @@ ssmtp_port: Port for your mailserver; default is 25
 # Questions?
 
 Contact [support@dustysun.com](<a href="mailto:support@dustysun.com">)
+
+
+# Revisions
+
+= v2 2018-09-07 = 
+* Added SOAP client

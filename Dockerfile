@@ -7,7 +7,7 @@ RUN docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr
 RUN pecl install memcached \
     && echo "extension=memcached.so" > /usr/local/etc/php/conf.d/20_memcached.ini
 
-RUN docker-php-ext-install gd mysqli opcache zip
+RUN docker-php-ext-install gd mysqli opcache soap zip
 
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php

@@ -37,10 +37,10 @@
 # To use these, you must have another container or other accessible mailing
 # host from which you can send emails
 #
-# ssmtp_hostname: Name of your server; default is localhost.localdomain
-# ssmtp_root_email: Email address for the root user; default is root@localhost
-# ssmtp_server: FQDN or hostname/containername of your mailserver; default is mail
-# ssmtp_port: Port for your mailserver; default is 25
+# SSMTP_HOSTNAME: Name of your server; default is localhost.localdomain
+# SSMTP_ROOT_EMAIL: Email address for the root user; default is root@localhost
+# SSMTP_SERVER: FQDN or hostname/containername of your mailserver; default is mail
+# SSMTP_PORT: Port for your mailserver; default is 25
 # ===========================================================
 
 #variables
@@ -96,10 +96,10 @@ curl -o wordpress.tar.gz -fSL "https://wordpress.org/latest.tar.gz"  | tee -a $s
 # Get the host names which are separated by comma
 
 #Check for $VIRTUAL_HOST
-if [ -z "$VIRTUAL_HOST" ]; then echo "VIRTUAL_HOST var must be set in the Docker environment variables. Exiting..." 2>&1 | tee -a $scriptLog; exit 1; fi
+if [ -z "$VIRTUAL_HOST" ]; then echo "VIRTUAL_HOST var must be set in the Docker environment variables if you wish for WordPress to be set up." 2>&1 | tee -a $scriptLog; fi
 
 #Check for $VIRTUAL_ROOT
-if [ -z "$VIRTUAL_ROOT" ]; then echo "VIRTUAL_ROOT var must be set in the Docker environment variables. Exiting..." 2>&1 | tee -a $scriptLog; exit 1; fi
+if [ -z "$VIRTUAL_ROOT" ]; then echo "VIRTUAL_ROOT var must be set in the Docker environment variables." 2>&1 | tee -a $scriptLog; exit 1; fi
 
 
 IFS=',' read -ra V_HOSTS <<< "${VIRTUAL_HOST}"
