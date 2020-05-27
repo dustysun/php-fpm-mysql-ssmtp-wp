@@ -1,6 +1,6 @@
 ### About
 
-This image is perfect for a fast and performant WordPress container based on PHP FPM with support for MySQL extensions. Also included is zip support used by many plugins, and SSMTP supporting using sendmail in conjunction with an external mailserver is supported.
+This image is perfect for a fast and performant WordPress container based on PHP FPM with support for MySQL extensions. Also included is zip support used by many plugins, and MSMTP supporting using sendmail in conjunction with an external mailserver is supported.
 
 Also included in a WordPress installation script which supports multiple virtual hosts unlike the official WordPress Docker image which only supports one WordPress installation per container.
 
@@ -8,7 +8,7 @@ Also included in a WordPress installation script which supports multiple virtual
 
 Make sure to start your containers with the -h or --hostname flag with a FQDN (fully-qualified domain name) which will add the appropriate hostname to the /etc/hosts file in your container. Then, make sure your container is actually reachable by that FQDN.
 
-Next, you will need to provide environment variables that point SSMTP to your mailserver. A good option is the [namshi/docker-smtp container](<a href="https://github.com/namshi/docker-smtp">)
+Next, you will need to provide environment variables that point MSMTP to your mailserver. A good option is the [namshi/docker-smtp container](<a href="https://github.com/namshi/docker-smtp">)
 
 # Environment Variables Supported
 
@@ -53,6 +53,11 @@ Contact [support@dustysun.com](<a href="mailto:support@dustysun.com">)
 
 
 # Revisions
+= v3.0 2020-05-26 =
+* Updated to PHP 7.4.
+* Changed SSMTP to MSMTP as SSMTP is no longer maintained.
+* Updated mysql-client reference to mariadb-client.
+* Updated default PHP memory from 128M to 256M.
 
 = v2.1 2018-09-07 = 
 * Added SOAP client

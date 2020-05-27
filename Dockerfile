@@ -5,13 +5,17 @@ RUN apt-get update && apt-get install -q -y \
 		libpng-dev \
 		libxml2-dev \
 		zlib1g-dev \
-		mysql-client \
-		ssmtp \
+		libzip-dev \
+		# needed for gd
+		libfreetype6-dev \
+		libjpeg62-turbo-dev \
+		mariadb-client \
+		msmtp \
 		mailutils \
 		libmemcached-dev \
 		&& rm -rf /var/lib/apt/lists/*
 
-RUN docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 
 RUN pecl install memcached \
     && echo "extension=memcached.so" > /usr/local/etc/php/conf.d/20_memcached.ini
