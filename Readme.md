@@ -42,10 +42,9 @@ Mail environment variables:
 To use these, you must have another container or other accessible mailing
 host from which you can send emails
 
-ssmtp_hostname: Name of your server; default is localhost.localdomain
-ssmtp_root_email: Email address for the root user; default is root@localhost
-ssmtp_server: FQDN or hostname/containername of your mailserver; default is mail
-ssmtp_port: Port for your mailserver; default is 25
+MSMTP_DEFAULT_EMAIL_FROM: Email address for the default user; default is root@localhost
+MSMTP_SERVER: FQDN or hostname/containername of your mailserver; default is mail
+MSMTP_PORT: Port for your mailserver; default is 25
 
 # Questions?
 
@@ -53,6 +52,9 @@ Contact [support@dustysun.com](<a href="mailto:support@dustysun.com">)
 
 
 # Revisions
+= v3.1 2020-06-05 = 
+* Updated script to correctly create the /etc/msmtmprc config file and updated PHP sendmail config to use it.
+
 = v3.0 2020-05-26 =
 * Updated to PHP 7.4.
 * Changed SSMTP to MSMTP as SSMTP is no longer maintained.

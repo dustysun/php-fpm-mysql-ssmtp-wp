@@ -40,7 +40,7 @@ RUN echo "upload_max_filesize = 64M" >> /usr/local/etc/php/conf.d/php-uploads.in
 RUN echo "post_max_size = 72M" >> /usr/local/etc/php/conf.d/php-uploads.ini
 RUN echo "max_execution_time = 180" >> /usr/local/etc/php/conf.d/php-uploads.ini
 
-RUN echo "sendmail_path=sendmail -i -t" >> /usr/local/etc/php/conf.d/php-sendmail.ini
+RUN echo "sendmail_path=\"/usr/bin/msmtp -C /etc/msmtprc -t --read-envelope-from\"" >> /usr/local/etc/php/conf.d/php-sendmail.ini
 
 COPY docker-entrypoint.sh /usr/local/bin
 

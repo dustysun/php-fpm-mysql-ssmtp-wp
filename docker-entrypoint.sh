@@ -1,7 +1,7 @@
 #!/bin/bash
 # ==========================================================
 #
-# v 2.0.1
+# v 2.1
 #
 # Sets up WordPress using the VIRTUAL_HOST and other
 # environment variables. Some sections are from the
@@ -37,10 +37,9 @@
 # To use these, you must have another container or other accessible mailing
 # host from which you can send emails
 #
-# SSMTP_HOSTNAME: Name of your server; default is localhost.localdomain
-# SSMTP_ROOT_EMAIL: Email address for the root user; default is root@localhost
-# SSMTP_SERVER: FQDN or hostname/containername of your mailserver; default is mail
-# SSMTP_PORT: Port for your mailserver; default is 25
+# MSMTP_DEFAULT_EMAIL_FROM: Email address for the default user; default is root@localhost
+# MSMTP_SERVER: FQDN or hostname/containername of your mailserver; default is mail
+# MSMTP_PORT: Port for your mailserver; default is 25
 # ===========================================================
 
 #variables
@@ -289,30 +288,28 @@ EOPHP
   fi # end updates to wp-config.php
 done # end processing per host
 
-# Set up SSTMP
-if [ -z "$SSMTP_HOSTNAME" ]; then
-	echo "SSMTP_HOSTNAME not set. Defaulting to 'localhost.localdomain' as hostname." 2>&1 | tee -a $scriptLog;
-	SSMTP_HOSTNAME=localhost.localdomain
+# Set up MSTMP
+if [ -z "$MSMTP_SERVER" ]; then
+	echo "MSMTP_SERVER not set. Defaulting to 'mail' as mailserver name." 2>&1 | tee -a $scriptLog;
+	MSMTP_SERVER=mail
 fi
 
-if [ -z "$SSMTP_ROOT_EMAIL" ]; then
-	echo "SSMTP_ROOT_EMAIL not set. Defaulting to 'root@localhost' as root email." 2>&1 | tee -a $scriptLog;
-	SSMTP_ROOT_EMAIL=root@localhost
+if [ -z "$MSMTP_PORT" ]; then
+	echo "MSMTP_PORT not set. Defaulting to '25' for port." 2>&1 | tee -a $scriptLog;
+	MSMTP_PORT=25
 fi
 
-if [ -z "$SSMTP_SERVER" ]; then
-	echo "SSMTP_SERVER not set. Defaulting to 'mail' as mailserver name." 2>&1 | tee -a $scriptLog;
-	SSMTP_SERVER=mail
+if [ -z "$MSMTP_DEFAULT_EMAIL_FROM" ]; then
+	echo "MSMTP_DEFAULT_EMAIL_FROM not set. Defaulting to 'root@localhost' as root email." 2>&1 | tee -a $scriptLog;
+	MSMTP_DEFAULT_EMAIL_FROM=root@localhost
 fi
 
-if [ -z "$SSMTP_PORT" ]; then
-	echo "SSMTP_PORT not set. Defaulting to '25' for port." 2>&1 | tee -a $scriptLog;
-	SSMTP_PORT=25
-fi
 
-echo "hostname=${SSMTP_HOSTNAME}" > /etc/ssmtp/ssmtp.conf
-echo "root=${SSMTP_ROOT_EMAIL}" >> /etc/ssmtp/ssmtp.conf
-echo "mailhub=${SSMTP_SERVER}:${SSMTP_PORT}" >> /etc/ssmtp/ssmtp.conf
-echo "FromLineOverride=yes" >> /etc/ssmtp/ssmtp.conf
+
+echo 
+echo "account default" > /etc/msmtprc
+echo "host ${SSMTP_SERVER}" >> /etc/msmtprc
+echo "port ${SSMTP_PORT}" >> /etc/msmtprc
+echo "from ${SSMTP_ROOT_EMAIL}" >> /etc/msmtprc
 
 exec "$@"
